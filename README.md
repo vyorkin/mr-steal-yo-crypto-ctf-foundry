@@ -9,8 +9,8 @@ Visit [mrstealyocrypto.xyz](https://mrstealyocrypto.xyz/)
 - _Big thanks to [0xToshii](https://twitter.com/0xToshii) who created the [first version of this game](https://github.com/tinchoabbate/damn-vulnerable-defi/tree/v2.0.0) and to all the fellows behind the [Foundry Framework](https://github.com/0xToshii/mr-steal-yo-crypto-ctf)_
 - _Thanks to [Nicolás García](https://twitter.com/ngp2311) who created the [foundry version of Damn Vulnerable DeFi](https://github.com/nicolasgarcia214/damn-vulnerable-defi-foundry) which is used as a basis for this repo_
 
-A set of challenges to learn offensive security of smart contracts.
-Featuring interesting challenges loosely (or directly) inspired by real world exploits.
+Mr Steal Yo Crypto is a series of wargame challenges where you are tasked with exploiting smart contracts covering varying use cases within crypto.
+The challenges are loosely (or directly) inspired by real world exploits. Throughout numerous challenges you will build the skills necessary to become a hunter in the space.
 
 ## How To Play 🕹️
 
