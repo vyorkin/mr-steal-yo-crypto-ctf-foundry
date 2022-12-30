@@ -2,11 +2,11 @@
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vyorkin/mr-steal-your-crypto-ctf-foundry)
 
-![Github Actions][gha-badge] [![Telegram Support][tg-support-badge]][tg-support-url]
+![Github Actions][gha-badge]
 
 [gha-badge]: https://img.shields.io/github/workflow/status/vyorkin/mr-steal-your-crypto-ctf-foundry/CI
 
-[![Twitter Follow](https://img.shields.io/twitter/follow/yorkin?label=Follow%20me%20%40ngp2311&style=social)](https://twitter.com/yorkin)
+[![Twitter Follow](https://img.shields.io/twitter/follow/yorkin?label=Follow%20me%20%40yorkin&style=social)](https://twitter.com/yorkin)
 
 Visit [mrstealyocrypto.xyz](https://mrstealyocrypto.xyz/)
 
