@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "./BaseLaunchpegNFT.sol";
+import {BaseLaunchpegNFT} from "./BaseLaunchpegNFT.sol";
+import {Launchpeg__WrongPhase, Launchpeg__CanNotMintThisMany, Launchpeg__MaxSupplyReached} from "./LaunchpegErrors.sol";
 
 /// @dev hopegs NFT exchange wrapper to manage mint
 contract FlatLaunchpeg is BaseLaunchpegNFT {
@@ -19,11 +20,9 @@ contract FlatLaunchpeg is BaseLaunchpegNFT {
 
     constructor(
         uint256 _collectionSize,
-        uint256 _maxBatchSize,
         uint256 _maxPerAddressDuringMint
     ) BaseLaunchpegNFT(
         _collectionSize,
-        _maxBatchSize,
         _maxPerAddressDuringMint
     ) {}
 
@@ -59,5 +58,4 @@ contract FlatLaunchpeg is BaseLaunchpegNFT {
             return Phase.PublicSale;
         }
     }
-
 }

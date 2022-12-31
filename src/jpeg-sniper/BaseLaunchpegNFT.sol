@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "openzeppelin/token/ERC721/ERC721.sol";
-import "openzeppelin/access/Ownable.sol";
-import "openzeppelin/utils/Counters.sol";
-import "./LaunchpegErrors.sol";
+import {ERC721} from "openzeppelin/token/ERC721/ERC721.sol";
+import {Ownable} from "openzeppelin/access/Ownable.sol";
+import {Counters} from "openzeppelin/utils/Counters.sol";
+import {Launchpeg__Unauthorized, Launchpeg__NotEnoughFunds,Launchpeg__TransferFailed} from "./LaunchpegErrors.sol";
 
 /// @dev base NFT contract
 contract BaseLaunchpegNFT is ERC721, Ownable {
@@ -13,7 +13,6 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
     Counters.Counter private _tokenId;
 
     uint256 public collectionSize;
-    uint256 public maxBatchSize;
     uint256 public salePrice; // free mint
     uint256 public maxPerAddressDuringMint;
     uint256 public publicSaleStartTime;
@@ -32,11 +31,9 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
 
     constructor(
         uint256 _collectionSize,
-        uint256 _maxBatchSize,
         uint256 _maxPerAddressDuringMint
     ) ERC721('BOOTY','BOOTY') {
         collectionSize = _collectionSize;
-        maxBatchSize = _maxBatchSize;
         maxPerAddressDuringMint = _maxPerAddressDuringMint;
         publicSaleStartTime = block.timestamp; // mint turned on this block
     }
@@ -78,5 +75,4 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
             }
         }
     }
-
 }
