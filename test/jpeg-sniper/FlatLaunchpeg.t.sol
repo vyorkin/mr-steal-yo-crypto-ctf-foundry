@@ -50,18 +50,14 @@ contract FlatLaunchpegTest is Test {
 
   Utilities private utils;
   address payable private attacker;
-  address payable[] users;
-  uint256 private startBlock;
   FlatLaunchpeg private flatLaunchpeg;
 
   function setUp() public {
     utils = new Utilities();
 
-    users = utils.createUsers(14);
+    address payable[] memory users = utils.createUsers(1);
     attacker = users[0];
     vm.label(attacker, "Attacker");
-
-    startBlock = block.number;
 
     flatLaunchpeg = new FlatLaunchpeg(COLLECTION_SIZE, MAX_PER_ADDRESS_DURING_MINT);
     vm.label(address(flatLaunchpeg), "FlatLaunchpeg");
