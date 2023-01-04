@@ -125,6 +125,7 @@ contract SafuVault is ERC20, Ownable, ReentrancyGuard {
         } else {
             shares = (_amount * totalSupply()) / (_pool);
         }
+
         _mint(user, shares);
     }
 }
