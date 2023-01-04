@@ -27,8 +27,8 @@ contract GameAssetsTest is Test {
 
     assetWrapper = new AssetWrapper("");
 
-    swordAsset = new GameAsset("SHIELD", "SHIELD");
-    shieldAsset = new GameAsset("SHIELD", "SHIELD");
+    swordAsset = new GameAsset("Sword", "SWORD");
+    shieldAsset = new GameAsset("Shield", "SHIELD");
 
     assetWrapper.updateWhitelist(address(swordAsset));
     assetWrapper.updateWhitelist(address(shieldAsset));
