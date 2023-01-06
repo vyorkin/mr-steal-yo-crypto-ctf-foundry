@@ -44,7 +44,7 @@ contract AssetWrapper is AssetHolder, Ownable {
     /// @dev a GameAsset contract cannot be removed from the WL
     function updateWhitelist(address asset) external onlyOwner {
         if (!_whitelist[asset]) {
-            _assetId[asset]=_tokenId.current();
+            _assetId[asset] = _tokenId.current();
             _whitelist[asset] = true;
             _tokenId.increment();
         }

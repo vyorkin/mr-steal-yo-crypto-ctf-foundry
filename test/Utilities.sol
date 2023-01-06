@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 contract Utilities is Test {
     bytes32 internal nextUser = keccak256(abi.encodePacked("user address"));

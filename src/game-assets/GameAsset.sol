@@ -63,7 +63,7 @@ contract GameAsset is Context, ERC165, IERC721, IERC721Metadata, Ownable {
     /// @dev mints n number of NFTs per user
     /// @dev only contract owner can mint NFTs for users
     function mintForUser(address to, uint256 quantity) external onlyOwner {
-        for (uint256 i=0; i<quantity; i++) {
+        for (uint256 i = 0; i < quantity; i++) {
             _mint(to, _tokenId.current());
             _tokenId.increment();
         }
