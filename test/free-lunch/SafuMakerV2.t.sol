@@ -84,7 +84,24 @@ contract SafuMakerV2Test is Test {
         )
     );
 
-    // safuMaker = new SafuMakerV2(address(safuFactory), )
+    safuMaker = new SafuMakerV2(address(safuFactory), BAR_ADDRESS, address(safu), address(usdc));
+
+    usdc.approve(address(safuRouter), type(uint256).max);
+    safu.approve(address(safuRouter), type(uint256).max);
+
+    // Create USDC-SAFU pair
+    safuRouter.addLiquidity(
+      address(usdc),
+      address(safu),
+      1000000,
+      1000000,
+      0,
+      0,
+      address(this),
+      block.timestamp + 100 days
+    );
+
+    ISafuPair pair = ISafuPair(safuFactory.getPair(address(usdc), address(safu)));
   }
 
   function testExploit() public {
