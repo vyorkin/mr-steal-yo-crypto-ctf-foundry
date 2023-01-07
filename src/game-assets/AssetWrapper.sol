@@ -7,14 +7,13 @@ import {AssetHolder} from "./AssetHolder.sol";
 
 interface IGameAsset {
     function ownerOf(uint256 tokenId) external returns (address);
+
     function isApprovedForAll(
         address owner,
         address operator
     ) external returns (bool);
-    function setOwnerOperator(
-        address to,
-        uint256 tokenId
-    ) external;
+
+    function setOwnerOperator(address to, uint256 tokenId) external;
 }
 
 /// @dev functionality for wrapping and unwrapping assets for use in the game
@@ -34,11 +33,7 @@ contract AssetWrapper is AssetHolder, Ownable {
     /// @dev token ID for each whitelisted GameAsset contract
     mapping(address => uint256) private _assetId;
 
-    constructor(
-        string memory uri
-    ) AssetHolder (
-        uri
-    ) {}
+    constructor(string memory uri) AssetHolder(uri) {}
 
     /// @dev owner can whitelist GameAsset ERC721 contracts
     /// @dev a GameAsset contract cannot be removed from the WL
@@ -80,18 +75,12 @@ contract AssetWrapper is AssetHolder, Ownable {
             "Wrapper: asset is not owned by sender"
         );
 
-        asset.setOwnerOperator( // wrapper takes control of asset
-            address(this),
-            nftId
-        );
+        asset.setOwnerOperator(address(this), nftId); // wrapper takes control of asset
     }
 
     /// @dev unwraps assets and transfers NFT back to user `assetOwner`
     /// @dev per game mechanics user has max of one wrapped NFT per token ID
-    function unwrap(
-        address assetOwner,
-        address assetAddress
-    ) public {
+    function unwrap(address assetOwner, address assetAddress) public {
         require(isWhitelisted(assetAddress), "Wrapper: asset not whitelisted");
 
         IGameAsset asset = IGameAsset(assetAddress);
@@ -116,18 +105,12 @@ contract AssetWrapper is AssetHolder, Ownable {
         _mint(assetOwner, assetId, 1, data);
     }
 
-    function _unwrap(
-        address assetOwner,
-        address assetAddress
-    ) private {
+    function _unwrap(address assetOwner, address assetAddress) private {
         uint256 assetId = _assetId[assetAddress];
         uint256 nftId = getIdOwned(assetId, assetOwner); // NFT id owned by user
 
         _burn(assetOwner, assetId, 1); // reverts if user doesn't own asset
 
-        IGameAsset(assetAddress).setOwnerOperator( // wrapper relinquishes control of asset
-            assetOwner,
-            nftId
-        );
+        IGameAsset(assetAddress).setOwnerOperator(assetOwner, nftId); // wrapper relinquishes control of asset
     }
 }

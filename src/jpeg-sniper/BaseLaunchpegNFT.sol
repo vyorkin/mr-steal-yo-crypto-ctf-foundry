@@ -4,7 +4,7 @@ pragma solidity ^0.8.16;
 import {ERC721} from "openzeppelin/token/ERC721/ERC721.sol";
 import {Ownable} from "openzeppelin/access/Ownable.sol";
 import {Counters} from "openzeppelin/utils/Counters.sol";
-import {Launchpeg__Unauthorized, Launchpeg__NotEnoughFunds,Launchpeg__TransferFailed} from "./LaunchpegErrors.sol";
+import {Launchpeg__Unauthorized, Launchpeg__NotEnoughFunds, Launchpeg__TransferFailed} from "./LaunchpegErrors.sol";
 
 /// @dev base NFT contract
 contract BaseLaunchpegNFT is ERC721, Ownable {
@@ -32,7 +32,7 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
     constructor(
         uint256 _collectionSize,
         uint256 _maxPerAddressDuringMint
-    ) ERC721('BOOTY','BOOTY') {
+    ) ERC721("BOOTY", "BOOTY") {
         collectionSize = _collectionSize;
         maxPerAddressDuringMint = _maxPerAddressDuringMint;
         publicSaleStartTime = block.timestamp; // mint turned on this block
@@ -41,11 +41,7 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
     /// @notice Returns the number of NFTs minted by a specific address
     /// @param _owner The owner of the NFTs
     /// @return numberMinted Number of NFTs minted
-    function numberMinted(address _owner)
-        public
-        view
-        returns (uint256)
-    {
+    function numberMinted(address _owner) public view returns (uint256) {
         return balanceOf(_owner);
     }
 
@@ -56,7 +52,7 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
 
     /// @dev mints n number of NFTs per user
     function _mintForUser(address to, uint256 quantity) internal {
-        for (uint256 i=0; i<quantity; i++) {
+        for (uint256 i = 0; i < quantity; i++) {
             _mint(to, _tokenId.current());
             _tokenId.increment();
         }

@@ -18,16 +18,14 @@ contract SafuStrategy is Ownable, Pausable {
     address public want; // deposit & withdrawal token
     address public vault; // safu vault
 
-    mapping (address => bool) public whitelist;
+    mapping(address => bool) public whitelist;
 
     modifier onlyWhitelisted() {
         require(whitelist[msg.sender] == true, "not whitelisted");
         _;
     }
 
-    constructor(
-        address _want
-    ) {
+    constructor(address _want) {
         want = _want;
         whitelist[msg.sender] = true;
     }
@@ -100,7 +98,7 @@ contract SafuStrategy is Ownable, Pausable {
     /// @dev takes into account funds at hand + funds allocated in yield generator
     /// @dev HOWEVER yield generator is abstracted so it is ignored here (0)
     function balanceOf() public view returns (uint256) {
-        return balanceOfWant()+0; // yield generator balance is 0
+        return balanceOfWant() + 0; // yield generator balance is 0
     }
 
     /// @dev returns balance of {want} in this contract

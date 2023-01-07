@@ -1,4 +1,4 @@
-# Challenge 04 - Free Lunch
+# Challenge 4 - Free Lunch
 
 SafuSwap has just launched their sexy new UniswapV2 fork.
 

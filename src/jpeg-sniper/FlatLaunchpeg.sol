@@ -21,19 +21,13 @@ contract FlatLaunchpeg is BaseLaunchpegNFT {
     constructor(
         uint256 _collectionSize,
         uint256 _maxPerAddressDuringMint
-    ) BaseLaunchpegNFT(
-        _collectionSize,
-        _maxPerAddressDuringMint
-    ) {}
+    ) BaseLaunchpegNFT(_collectionSize, _maxPerAddressDuringMint) {}
 
     /// @notice Mint NFTs during the public sale
     /// @param _quantity Quantity of NFTs to mint
-    function publicSaleMint(uint256 _quantity)
-        external
-        payable
-        isEOA
-        atPhase(Phase.PublicSale)
-    {
+    function publicSaleMint(
+        uint256 _quantity
+    ) external payable isEOA atPhase(Phase.PublicSale) {
         if (numberMinted(msg.sender) + _quantity > maxPerAddressDuringMint) {
             revert Launchpeg__CanNotMintThisMany();
         }
@@ -49,10 +43,7 @@ contract FlatLaunchpeg is BaseLaunchpegNFT {
     /// @notice Returns the current phase
     /// @return phase Current phase
     function currentPhase() public view returns (Phase) {
-        if (
-            publicSaleStartTime == 0 ||
-            block.timestamp < publicSaleStartTime
-        ) {
+        if (publicSaleStartTime == 0 || block.timestamp < publicSaleStartTime) {
             return Phase.NotStarted;
         } else {
             return Phase.PublicSale;
