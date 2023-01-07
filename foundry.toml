@@ -1,6 +1,6 @@
 [profile.default]
 src = 'src'
 out = 'out'
-libs = ['lib']
+libs = ['lib', 'node_modules']
 verbosity = 2
 fs_permissions = [{ access = 'read', path = './' }]

@@ -72,14 +72,14 @@ contract SafuMakerV2Test is Test {
 
     safuFactory = ISafuFactory(
         deployCode(
-            "./node_modules/@uniswap/v2-core/build/UniswapV2Factory.json",
+            "./build-uniswap/v2/UniswapV2Factory.json",
             abi.encode(address(this)) // feeToSetter
         )
     );
 
     safuRouter = ISafuRouter(
         deployCode(
-            "./node_modules/@uniswap/v2-core/build/UniswapV2Router02.json",
+            "./build-uniswap/v2/UniswapV2Router02.json",
             abi.encode(address(safuFactory), address(weth))
         )
     );
