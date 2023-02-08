@@ -65,8 +65,14 @@ contract SafuMakerV2Test is Test {
     vm.label(attacker, "Attacker");
 
     usdc = new Token("USDC", "USDC");
+    vm.label(address(usdc), "USDC");
+
     usdc.mint(attacker, 100);
     usdc.mint(address(this), 1000000);
+
+    safu = new Token("SAFU", "SAFU");
+    safu.mint(attacker, 100);
+    safu.mint(address(this), 1000000);
 
     weth = new WETH9();
 
@@ -102,6 +108,9 @@ contract SafuMakerV2Test is Test {
     );
 
     ISafuPair pair = ISafuPair(safuFactory.getPair(address(usdc), address(safu)));
+
+    // Simulates trading activity, as LP is issued to feeTo address for trading rewards
+    IERC20(address(pair)).transfer(address(safuMaker), 10000); // 1% of LP
   }
 
   function testExploit() public {
@@ -116,6 +125,7 @@ contract SafuMakerV2Test is Test {
   }
 
   function validate() private {
-
+    assertEq(usdc.balanceOf(attacker), 500);
+    assertEq(safu.balanceOf(attacker), 500);
   }
 }
