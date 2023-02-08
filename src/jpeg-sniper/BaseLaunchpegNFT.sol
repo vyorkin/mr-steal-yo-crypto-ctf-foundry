@@ -56,7 +56,7 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
 
     /// @dev mints n number of NFTs per user
     function _mintForUser(address to, uint256 quantity) internal {
-        for (uint256 i=0; i<quantity; i++) {
+        for (uint256 i = 0; i < quantity; i++) {
             _mint(to, _tokenId.current());
             _tokenId.increment();
         }

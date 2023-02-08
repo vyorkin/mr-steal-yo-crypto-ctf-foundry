@@ -112,5 +112,13 @@ contract GameAssetsTest is Test {
   }
 
   function validate() private {
+    assertEq(swordAsset.balanceOf(user), 0);
+    assertEq(shieldAsset.balanceOf(user), 0);
+
+    assertEq(swordAsset.balanceOf(address(assetWrapper)), 1);
+    assertEq(shieldAsset.balanceOf(address(assetWrapper)), 1);
+
+    assertEq(assetWrapper.balanceOf(user, 0), 0);
+    assertEq(assetWrapper.balanceOf(user, 1), 0);
   }
 }
