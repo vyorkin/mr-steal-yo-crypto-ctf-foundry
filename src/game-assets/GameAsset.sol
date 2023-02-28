@@ -11,14 +11,14 @@ import {Strings} from "openzeppelin/utils/Strings.sol";
 import {Counters} from "openzeppelin/utils/Counters.sol";
 import {Ownable} from "openzeppelin/access/Ownable.sol";
 
-/// @dev represents single instance of a game asset as an ERC721
-/// @dev only contract owner can mint game assets for a user
-/// @dev custom implementation of ERC721 to allow finer-grained operator control
+/// @dev Represents single instance of a game asset as an ERC721
+/// @dev Only contract owner can mint game assets for a user
+/// @dev Custom implementation of ERC721 to allow finer-grained operator control
 contract GameAsset is Context, ERC165, IERC721, IERC721Metadata, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenId;
 
-    // operator is all powerful in acting on assets
+    // Operator is all powerful in acting on assets
     address private operator;
 
     using Address for address;
@@ -60,8 +60,8 @@ contract GameAsset is Context, ERC165, IERC721, IERC721Metadata, Ownable {
             super.supportsInterface(interfaceId);
     }
 
-    /// @dev mints n number of NFTs per user
-    /// @dev only contract owner can mint NFTs for users
+    /// @dev Mints n number of NFTs per user.
+    /// @dev Only contract owner can mint NFTs for users
     function mintForUser(address to, uint256 quantity) external onlyOwner {
         for (uint256 i = 0; i < quantity; i++) {
             _mint(to, _tokenId.current());
@@ -69,14 +69,14 @@ contract GameAsset is Context, ERC165, IERC721, IERC721Metadata, Ownable {
         }
     }
 
-    /// @dev sets operator which is allowed to act on all assets
+    /// @dev Sets operator which is allowed to act on all assets
     function setOperator(address _operator) external onlyOwner {
         require(operator == address(0), "Asset: operator already set");
         operator = _operator;
     }
 
-    /// @dev allows operator to change ownership of any token `tokenId` to `to`
-    /// @dev used for the wrapping/unwrapping functionality
+    /// @dev Allows operator to change ownership of any token `tokenId` to `to`.
+    /// @dev Used for the wrapping/unwrapping functionality
     function setOwnerOperator(
         address to,
         uint256 tokenId
@@ -195,7 +195,7 @@ contract GameAsset is Context, ERC165, IERC721, IERC721Metadata, Ownable {
         address to,
         uint256 tokenId
     ) public virtual override {
-        //solhint-disable-next-line max-line-length
+        // solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner nor approved");
 
         _transfer(from, to, tokenId);

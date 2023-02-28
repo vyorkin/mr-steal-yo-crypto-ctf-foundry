@@ -54,10 +54,10 @@ contract SafuVaultTest is Test {
     vm.label(attacker, "Attacker");
 
     usdc = new Token("USDC", "USDC");
-    usdc.mint(attacker, 10000);
-    usdc.mint(address(this), 10000);
+    usdc.mint(attacker, 10000 ether);
+    usdc.mint(address(this), 10000 ether);
 
-    assertEq(usdc.balanceOf(address(this)), 10000);
+    assertEq(usdc.balanceOf(address(this)), 10000 ether);
 
     safuStrategy = new SafuStrategy(address(usdc));
     safuVault = new SafuVault(address(safuStrategy), "LP Token", "LP");
@@ -68,11 +68,11 @@ contract SafuVaultTest is Test {
     safuVault.depositAll();
 
     // Our deposit
-    assertEq(safuVault.balance(), 10000);
+    assertEq(safuVault.balance(), 10000 ether);
     // Our LP shares
-    assertEq(safuVault.balanceOf(address(this)), 10000);
+    assertEq(safuVault.balanceOf(address(this)), 10000 ether);
 
-    assertEq(safuVault.totalSupply(), 10000);
+    assertEq(safuVault.totalSupply(), 10000 ether);
   }
 
   function testExploit() public {
@@ -94,7 +94,7 @@ contract SafuVaultTest is Test {
     uint256 strategyFunds = usdc.balanceOf(address(safuStrategy));
     uint256 totalFunds = vaultFunds + strategyFunds;
 
-    assertLt(totalFunds, 1000);
-    assertGt(usdc.balanceOf(attacker), 19000);
+    assertLt(totalFunds, 1000 ether);
+    assertGt(usdc.balanceOf(attacker), 19000 ether);
   }
 }

@@ -16,20 +16,20 @@ import {ERC165, IERC165} from "openzeppelin/utils/introspection/ERC165.sol";
 contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
     using Address for address;
 
-    // mapping from token ID to account NFT id owned
-    // user can only own a single NFT id per token ID
+    // Mapping from token ID to account NFT id owned
+    // User can only own a single NFT id per token ID
     mapping(uint256 => mapping(address => uint256)) private _idOwned;
 
-    // mapping of whether account owns an NFT id for a token ID
+    // Mapping of whether account owns an NFT id for a token ID
     mapping(uint256 => mapping(address => bool)) private _ownsAny;
 
-    // mapping from account to operator approvals
+    // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    // used as the URI for all token types by relying on ID substitution
+    // Used as the URI for all token types by relying on ID substitution
     string private _uri;
 
-    /// @dev set URI on initialization
+    /// @dev Set URI on initialization
     constructor(string memory uri_) {
         _setURI(uri_);
     }
@@ -42,24 +42,24 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
             super.supportsInterface(interfaceId);
     }
 
-    /// @dev returns the same URI for *all* token types
+    /// @dev Returns the same URI for *all* token types
     function uri(uint256) public view virtual override returns (string memory) {
         return _uri;
     }
 
-    /// @dev returns the NFT id for a given user `owner` and token ID `id`
+    /// @dev Returns the NFT id for a given user `owner` and token ID `id`
     function getIdOwned(uint256 id, address owner) public view returns (uint256) {
         return _idOwned[id][owner];
     }
 
-    /// @dev returns balance of account for token ID
-    /// @dev balance for a token ID can only be 0 or 1
+    /// @dev Returns balance of account for token ID
+    /// @dev Balance for a token ID can only be 0 or 1
     function balanceOf(address account, uint256 id) public view virtual override returns (uint256) {
         require(account != address(0), "ERC1155: address zero is not a valid owner");
         return _ownsAny[id][account] == true ? 1 : 0;
     }
 
-    /// @dev returns balance of accounts for given token IDs
+    /// @dev Returns balance of accounts for given token IDs
     function balanceOfBatch(address[] memory accounts, uint256[] memory ids)
         public
         view
@@ -78,17 +78,17 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         return batchBalances;
     }
 
-    /// @dev set approval for all
+    /// @dev Set approval for all
     function setApprovalForAll(address operator, bool approved) public virtual override {
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 
-    /// @dev return whether `operator` is approved for `account`
+    /// @dev Return whether `operator` is approved for `account`
     function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
         return _operatorApprovals[account][operator];
     }
 
-    /// @dev single transfer of an NFT id for a specific token ID
+    /// @dev Single transfer of an NFT id for a specific token ID
     /// @dev `amount` must be 1, `data` is the NFT id to transfer
     function safeTransferFrom(
         address from,
@@ -104,7 +104,7 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _safeTransferFrom(from, to, id, amount, data);
     }
 
-    /// @dev batch transfer of a set of NFT ids for a set of token IDs
+    /// @dev Batch transfer of a set of NFT ids for a set of token IDs
     /// @dev `amounts` must be 1s, `data` is array of NFT ids to transfer
     function safeBatchTransferFrom(
         address from,
@@ -120,8 +120,8 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 
-    /// @dev transfers single NFT id from `from` to `to` for a select token type `id`
-    /// @dev transfers only allowed to accounts which don't already own same token type `id`
+    /// @dev Transfers single NFT id from `from` to `to` for a select token type `id`.
+    /// @dev Transfers only allowed to accounts which don't already own same token type `id`
     function _safeTransferFrom(
         address from,
         address to,
@@ -155,8 +155,8 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data);
     }
 
-    /// @dev transfers batch of NFT ids from `from` to `to` for set of token type `ids`
-    /// @dev transfers only allowed to accounts which don't already own same token types `ids`
+    /// @dev Transfers batch of NFT ids from `from` to `to` for set of token type `ids`.
+    /// @dev Transfers only allowed to accounts which don't already own same token types `ids`
     function _safeBatchTransferFrom(
         address from,
         address to,
@@ -195,12 +195,12 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _doSafeBatchTransferAcceptanceCheck(operator, from, to, ids, amounts, data);
     }
 
-    /// @dev sets new URI for all token types
+    /// @dev Sets new URI for all token types
     function _setURI(string memory newuri) internal virtual {
         _uri = newuri;
     }
 
-    /// @dev mints NFT id to `to` for token type `id`
+    /// @dev Mints NFT id to `to` for token type `id`
     /// @param data Stores NFT id to mint to `to`
     function _mint(
         address to,
@@ -231,7 +231,7 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
     }
 
-    /// @dev mints batch of NFT ids to `to` for token types `ids`
+    /// @dev Mints batch of NFT ids to `to` for token types `ids`
     /// @param data Stores NFT ids to mint to `to`
     function _mintBatch(
         address to,
@@ -265,7 +265,7 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _doSafeBatchTransferAcceptanceCheck(operator, address(0), to, ids, amounts, data);
     }
 
-    /// @dev destroys token type `id` from `from`
+    /// @dev Destroys token type `id` from `from`
     function _burn(
         address from,
         uint256 id,
@@ -288,7 +288,7 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
     }
 
-    /// @dev destroys token types `ids` from `from`
+    /// @dev Destroys token types `ids` from `from`
     function _burnBatch(
         address from,
         uint256[] memory ids,
@@ -315,7 +315,7 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
     }
 
-    /// @dev approves `operator` to operate on all of `owner` tokens
+    /// @dev Approves `operator` to operate on all of `owner` tokens
     function _setApprovalForAll(
         address owner,
         address operator,
@@ -326,7 +326,7 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         emit ApprovalForAll(owner, operator, approved);
     }
 
-    /// @dev hook that is called before any token transfer
+    /// @dev Hook that is called before any token transfer
     function _beforeTokenTransfer(
         address operator,
         address from,
@@ -336,7 +336,7 @@ contract AssetHolder is Context, ERC165, IERC1155, IERC1155MetadataURI {
         bytes memory data
     ) internal virtual {}
 
-    /// @dev hook that is called after any token transfer
+    /// @dev Hook that is called after any token transfer
     function _afterTokenTransfer(
         address operator,
         address from,

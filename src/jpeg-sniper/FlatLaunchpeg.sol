@@ -4,7 +4,7 @@ pragma solidity ^0.8.16;
 import {BaseLaunchpegNFT} from "./BaseLaunchpegNFT.sol";
 import {Launchpeg__WrongPhase, Launchpeg__CanNotMintThisMany, Launchpeg__MaxSupplyReached} from "./LaunchpegErrors.sol";
 
-/// @dev hopegs NFT exchange wrapper to manage mint
+/// @dev Hopegs NFT exchange wrapper to manage mint
 contract FlatLaunchpeg is BaseLaunchpegNFT {
     enum Phase {
         NotStarted,

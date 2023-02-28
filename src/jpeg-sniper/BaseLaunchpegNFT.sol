@@ -35,7 +35,7 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
     ) ERC721('BOOTY','BOOTY') {
         collectionSize = _collectionSize;
         maxPerAddressDuringMint = _maxPerAddressDuringMint;
-        publicSaleStartTime = block.timestamp; // mint turned on this block
+        publicSaleStartTime = block.timestamp; // Mint turned on this block
     }
 
     /// @notice Returns the number of NFTs minted by a specific address
@@ -49,12 +49,12 @@ contract BaseLaunchpegNFT is ERC721, Ownable {
         return balanceOf(_owner);
     }
 
-    /// @dev returns the total amount minted
+    /// @dev Returns the total amount minted
     function totalSupply() public view returns (uint256) {
         return _tokenId.current();
     }
 
-    /// @dev mints n number of NFTs per user
+    /// @dev Mints n number of NFTs per user
     function _mintForUser(address to, uint256 quantity) internal {
         for (uint256 i = 0; i < quantity; i++) {
             _mint(to, _tokenId.current());
